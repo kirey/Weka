@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+	
+
+
+  	<!-- Session Factory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- <property name="configLocation" value="classpath:hibernate.cfg.xml"/> -->
+		<property name="hibernateProperties">
+			<map>
+				<entry key="hibernate.default_schema" value="assistenza_casa_dev" />
+	 			<entry key="hibernate.hbm2ddl.auto" value="none" />
+				<entry key="show_sql" value="true" />
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+				<entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+				<entry key="hibernate.transaction.coordinator_class" value="jdbc" />
+				<!-- org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl -->
+<!-- 				<entry key="transaction.factory_class" value="org.hibernate.transaction.JDBCTransactionFactory" /> -->
+			</map>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.kubris.weka.data.entity</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- JDBC Template -->
+<!-- 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    	<property name="dataSource" ref="dataSource" />
+    </bean> -->
+
+	<!-- get the datasoure from jndi -->
+  	<jee:jndi-lookup id="dataSource" jndi-name="jdbc.ACDM" expected-type="javax.sql.DataSource" />
+
+ <!-- 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql:@192.168.60.13:5432:assistenza_casa" />
+		<property name="username" value="ASSISTENZA_CASA_DEV" />
+		<property name="password" value="ASSISTENZA_CASA_DEV" />
+	</bean> -->
+	
+	<!-- Transaction management -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+				
+		
+	<bean id="multipartResolver"
+	  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	  <property name="maxUploadSize" value="300000000" />
+	</bean>
+	
+
+	<bean id="loggerTaskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="1" />
+		<property name="maxPoolSize" value="1" />
+	</bean>
+
+</beans>
